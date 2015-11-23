@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +31,19 @@ public class ActionController
       });
 
       view.deleteButtonListener(e-> {
-         model.deleteEvents();
+         String dateText = String.valueOf(model.getSelectedMonth()+1) + "/" +
+            model.getSelectedDay() + "/" + model.getSelectedYear();
+         SimpleDateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy");
+         Date selectedDate = null;
+         try
+         {
+            selectedDate = formatDate.parse(dateText);
+         }
+         catch (ParseException pe)
+         {
+            pe.printStackTrace();
+         }
+         model.deleteDayEvents(selectedDate);
          model.notifyObservers();
       });
 

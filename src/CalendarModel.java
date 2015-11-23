@@ -344,12 +344,16 @@ public class CalendarModel extends Observable
    }
 
    /**
-    Deletes all events
+    Deletes the events scheduled for a given date
+    @param d the date to be deleted
     */
-   public void deleteEvents()
+   public void deleteDayEvents(Date d)
    {
-      events.clear();
-      setChanged();
+      if (events.containsKey(d) && d != null)
+      {
+         events.remove(d);
+         setChanged();
+      }
    }
 
    /**
