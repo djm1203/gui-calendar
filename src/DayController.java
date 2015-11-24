@@ -1,31 +1,42 @@
 /**
- Created by scot on 11/21/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ Class to connect the view to the model and handle events
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class DayController
 {
    private CalendarModel model;
-   private DayView view;
 
+   /**
+    Constructor method for the DayController
+    @param cm the model
+    @param dv the view
+    */
    public DayController(CalendarModel cm, DayView dv)
    {
       model = cm;
-      view = dv;
 
-      view.previousButtonListener(e-> {
+      dv.previousButtonListener(e -> {
          int selectedDay = model.getSelectedDay();
          int selectedMonth = model.getSelectedMonth();
          int selectedYear = model.getSelectedYear();
          if (selectedDay > 1)
          {
             --selectedDay;
-         }
-         else
+         } else
          {
             if (selectedMonth > 0)
             {
                --selectedMonth;
-            }
-            else
+            } else
             {
                selectedMonth = 11;
                --selectedYear;
@@ -44,7 +55,7 @@ public class DayController
          model.notifyObservers();
       });
 
-      view.nextButtonListener(e-> {
+      dv.nextButtonListener(e -> {
          int selectedDay = model.getSelectedDay();
          int selectedMonth = model.getSelectedMonth();
          int selectedYear = model.getSelectedYear();
@@ -53,14 +64,12 @@ public class DayController
          if (selectedDay < daysInMonth)
          {
             ++selectedDay;
-         }
-         else
+         } else
          {
             if (selectedMonth < 11)
             {
                ++selectedMonth;
-            }
-            else
+            } else
             {
                selectedMonth = 0;
                ++selectedYear;

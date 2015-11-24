@@ -6,7 +6,17 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
- Created by scot on 11/21/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ Class to launch Calendar application
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class SimpleCalendar extends JFrame
 {
@@ -48,6 +58,10 @@ public class SimpleCalendar extends JFrame
       add(monthView);
    }
 
+   /**
+    Loads stored events from a plain text file.
+    @param model a model load data into
+    */
    public void loadEvents(CalendarModel model)
    {
       // Load events from the file
@@ -80,7 +94,6 @@ public class SimpleCalendar extends JFrame
       }
       catch (FileNotFoundException fnfe)
       {
-         //fnfe.printStackTrace();
          System.out.printf("File does not exist.\n");
       }
       catch (IOException ioe)
@@ -91,12 +104,14 @@ public class SimpleCalendar extends JFrame
       {
          try
          {
-            fr.close();
-            br.close();
-         }
-         catch (NullPointerException npe)
-         {
-            System.out.printf("No data found.\n\n");
+            if (fr != null)
+            {
+               fr.close();
+            }
+            if (br != null)
+            {
+               br.close();
+            }
          }
          catch (IOException ioe)
          {

@@ -1,14 +1,28 @@
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
 /**
- Created by scot on 11/21/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ Class to display a calendar month
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class MonthView extends JPanel implements Observer
 {
@@ -23,7 +37,6 @@ public class MonthView extends JPanel implements Observer
    JTable calendar;
    JScrollPane scrollableCalendar;
    DefaultTableModel calModel;
-   //JButton create;
    final String[] months = {"January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"};
 
@@ -46,7 +59,6 @@ public class MonthView extends JPanel implements Observer
       final int CALENDAR_HEIGHT = 250;
       final String PREVIOUS_MONTH = "<";
       final String NEXT_MONTH = ">";
-      //final String CREATE_EVENT = "Create";
 
       previous = new JButton(PREVIOUS_MONTH);
       previous.setFocusPainted(false);
@@ -54,7 +66,6 @@ public class MonthView extends JPanel implements Observer
       year = new JLabel(String.valueOf(calendarModel.getCurrentYear()));
       next = new JButton(NEXT_MONTH);
       next.setFocusPainted(false);
-      //create = new JButton(CREATE_EVENT);
       calModel = new DefaultTableModel()
       {
          public boolean isCellEditable(int rowIndex, int columnIndex)
@@ -63,6 +74,7 @@ public class MonthView extends JPanel implements Observer
          }
       };
       calendar = new JTable(calModel);
+      calendar.setDefaultRenderer(Object.class, new EventScheduledCellRenderer());
       scrollableCalendar = new JScrollPane(calendar);
 
       // Set bounds.
@@ -71,7 +83,6 @@ public class MonthView extends JPanel implements Observer
       month.setBounds((PANEL_WIDTH-month.getPreferredSize().width)/2 -30, 50, 100, 25);
       year.setBounds((PANEL_WIDTH-year.getPreferredSize().width)/2 +30, 50, 100, 25);
       next.setBounds((PANEL_WIDTH-next.getPreferredSize().width)/2+BUTTON_WIDTH, 15, BUTTON_WIDTH, BUTTON_HEIGHT);
-      //create.setBounds((PANEL_WIDTH - (BUTTON_WIDTH+40))/2, PANEL_HEIGHT-60, BUTTON_WIDTH+40, BUTTON_HEIGHT);
       scrollableCalendar.setBounds((PANEL_WIDTH-CALENDAR_WIDTH)/2, 80, CALENDAR_WIDTH, CALENDAR_HEIGHT);
 
       previous.getAccessibleContext().setAccessibleName("Previous Month");
@@ -101,12 +112,13 @@ public class MonthView extends JPanel implements Observer
       calModel.setRowCount(CALENDAR_ROWS);
 
       // Position and display text
-      DefaultTableCellRenderer textRender = new DefaultTableCellRenderer();
+      DefaultTableCellRenderer textRender = new EventScheduledCellRenderer();
       textRender.setHorizontalAlignment(SwingConstants.RIGHT);
       textRender.setVerticalAlignment(SwingConstants.TOP);
       for (int i = 0; i < CALENDAR_COLUMNS; ++i)
       {
          calendar.getColumnModel().getColumn(i).setCellRenderer(textRender);
+
       }
 
       populateCalendar();
@@ -117,7 +129,6 @@ public class MonthView extends JPanel implements Observer
       add(year);
       add(next);
       add(scrollableCalendar);
-      //add(create);
    }
 
    /**
@@ -199,5 +210,61 @@ public class MonthView extends JPanel implements Observer
       year.setText(String.valueOf(calendarModel.getCurrentYear()));
       clearCalendar();
       populateCalendar();
+   }
+
+
+   /**
+    Overrides the DefaultTableCell Renderer class
+    Adds new functionality to conditionally colorize JTable cells
+    */
+   public class EventScheduledCellRenderer extends DefaultTableCellRenderer
+   {
+      @Override
+      public Component getTableCellRendererComponent(
+         JTable table, Object value, boolean isSelected,
+         boolean hasFocus, int row, int col)
+      {
+         JComponent cell = (JComponent) super.getTableCellRendererComponent(
+            table, value, isSelected, hasFocus, row, col);
+
+         Object dayOfMonth = table.getModel().getValueAt(row, col);
+         if(dayOfMonth != null)
+         {
+            String year = String.valueOf(calendarModel.getCurrentYear());
+            String month = String.valueOf(calendarModel.getCurrentMonth()+1);
+            String day = String.valueOf(dayOfMonth);
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            Date eventDate = null;
+            try
+            {
+               eventDate = sdf.parse(month+"/"+day+"/"+year);
+            }
+            catch (ParseException pe)
+            {
+               pe.printStackTrace();
+            }
+            if (calendarModel.eventsScheduled(eventDate))
+            {
+               cell.setBackground(new Color(208, 186, 247));
+            }
+            else
+            {
+               cell.setBackground(Color.WHITE);
+            }
+            if(isSelected)
+            {
+               cell.setBackground(new Color(181, 187, 255));
+               MatteBorder border = new MatteBorder(1, 1, 1, 1, new Color(46, 47, 255));
+               cell.setBorder(border);
+            }
+         }
+         else
+         {
+            cell = null;
+            RepaintManager myPanelsManager = RepaintManager.currentManager(table);
+            myPanelsManager.markCompletelyClean(table);
+         }
+         return cell;
+      }
    }
 }

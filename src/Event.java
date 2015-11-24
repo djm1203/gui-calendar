@@ -1,11 +1,12 @@
 import java.util.Calendar;
 
 /**
+
    COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
 
    Class to manipulate Calendar Events.
 
-   Solves CS151 homework assignment #2
+   Solves CS151 homework assignment #4
 
    @author Scot Matson
 

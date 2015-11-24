@@ -3,15 +3,22 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- Created by scot on 11/21/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ The model for the calendar application.
+ Stores and fetches data and performs basic
+ business logic pertaining to these tasks.
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class CalendarModel extends Observable
 {
-   private Calendar calendar;
-   // Actual calendar
-   private int realDay;
-   private int realMonth;
-   private int realYear;
    // Viewing calendar
    private int currentDay;
    private int currentMonth;
@@ -32,9 +39,12 @@ public class CalendarModel extends Observable
     */
    public CalendarModel(Calendar c)
    {
-      calendar = c;
+      Calendar calendar = c;
+      int realDay;
       selectedDay = currentDay = realDay = calendar.get(GregorianCalendar.DAY_OF_MONTH);
+      int realMonth;
       selectedMonth = currentMonth = realMonth = calendar.get(GregorianCalendar.MONTH);
+      int realYear;
       selectedYear = currentYear = realYear = calendar.get(GregorianCalendar.YEAR);
 
       GregorianCalendar calTemp = new GregorianCalendar(realYear, realMonth, 1);
@@ -101,6 +111,10 @@ public class CalendarModel extends Observable
       setChanged();
    }
 
+   /**
+    Returns the day of the week as an integer
+    @return
+    */
    public int getDayOfWeek()
    {
       GregorianCalendar calTemp = new GregorianCalendar(getSelectedYear(), getSelectedMonth(), getSelectedDay());
@@ -206,6 +220,13 @@ public class CalendarModel extends Observable
       setChanged();
    }
 
+   /**
+    Adds a new event to the model
+    @param start the starting datetime
+    @param end the ending datetime
+    @param title the title of the event
+    @return true if successful, otherwise false
+    */
    public boolean addNewEvent(Calendar start, Calendar end, String title)
    {
       boolean eventAdded = false;
@@ -252,13 +273,7 @@ public class CalendarModel extends Observable
                eventList.add(newEvent);
                eventAdded = true;
                // Resort the list.
-               Collections.sort(eventList, new Comparator<Event>()
-               {
-                  public int compare(Event a, Event b)
-                  {
-                     return a.compareTo(b);
-                  }
-               });
+               Collections.sort(eventList, Event::compareTo);
             }
          } else
          {
@@ -274,25 +289,31 @@ public class CalendarModel extends Observable
       return eventAdded;
    }
 
+   /**
+    Determines if an event has been scheduled for the given Date
+    @param date date to check for events
+    @return true if has events, otherwise false
+    */
    public boolean eventsScheduled(Date date)
    {
       boolean hasEvents = false;
-      SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-      try
+      if (date != null)
       {
-         // Ensure Date object is in the proper format to
-         // compare against the map [KEY].
-         date = sdf.parse(sdf.format(date));
+         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+         try
+         {
+            // Ensure Date object is in the proper format to
+            // compare against the map [KEY].
+            date = sdf.parse(sdf.format(date));
+         } catch (ParseException pe)
+         {
+            pe.printStackTrace();
+         }
+         if (events.containsKey(date))
+         {
+            hasEvents = true;
+         }
       }
-      catch (ParseException pe)
-      {
-         pe.printStackTrace();
-      }
-      if (events.containsKey(date))
-      {
-         hasEvents = true;
-      }
-
       return hasEvents;
    }
 

@@ -9,27 +9,33 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- Created by scot on 11/21/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ Class to display events for a given day
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class DayView extends JPanel implements Observer
 {
+   private final int EVENTS_WIDTH = 300;
    private CalendarModel calendarModel;
    private JButton previous;
    private JButton next;
-   private String dateText;
    private JLabel date;
    private JLabel day;
    private String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday",
       "Thursday", "Friday", "Saturday"};
-   //private JTextArea events;
-   //private JScrollPane scrollableEvents;
    private ArrayList<Event> eventsList;
    private Date selectedDate;
-   // Testing pane implementation
-   private JPanel eventsPanel; // TEST
-   private JScrollPane scrollableEventsPanel; // TEST
-   private final int PANEL_WIDTH = 348;
-   final int EVENTS_WIDTH = 300;
+   private JPanel eventsPanel;
+   private Color oddEvents;
+   private Color evenEvents;
 
    /**
     Constructor method for DayView
@@ -42,14 +48,13 @@ public class DayView extends JPanel implements Observer
       setLayout(null);
       setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 
-      //final int PANEL_WIDTH = 348;
       final int PANEL_HEIGHT = 348;
       final int BUTTON_WIDTH = 50;
       final int BUTTON_HEIGHT = 25;
       final String PREVIOUS_DAY = "<";
       final String NEXT_DAY = ">";
-      //final int EVENTS_WIDTH = 300;
       final int EVENTS_HEIGHT = 250;
+      final int PANEL_WIDTH = 348;
 
       previous = new JButton(PREVIOUS_DAY);
       previous.setFocusPainted(false);
@@ -59,17 +64,14 @@ public class DayView extends JPanel implements Observer
       String dateText = String.valueOf(calendarModel.getSelectedMonth()+1) + "/" +
          calendarModel.getSelectedDay() + "/" + calendarModel.getSelectedYear();
       date = new JLabel(dateText);
-      //events = new JTextArea();
-      //events.setFocusable(false);
-      //scrollableEvents = new JScrollPane(events);
       selectedDate = null;
-      // Testing a pane implementation
-      eventsPanel = new JPanel(); // TEST
+      eventsPanel = new JPanel();
       eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
       eventsPanel.setFocusable(false);
-      eventsPanel.setBackground(Color.WHITE);
-      //scrollableEventsPanel = new JScrollPane(eventsPanel); // TEST
-
+      eventsPanel.setBackground(this.getBackground());
+      JScrollPane scrollableEventsPanel = new JScrollPane(eventsPanel);
+      oddEvents = new Color(170, 255, 147);
+      evenEvents = new Color(135, 201, 148);
 
       // Set bounds.
       setBounds(PANEL_WIDTH, 0, PANEL_WIDTH, PANEL_HEIGHT);
@@ -77,8 +79,7 @@ public class DayView extends JPanel implements Observer
       next.setBounds((PANEL_WIDTH-next.getPreferredSize().width)/2+BUTTON_WIDTH, 15, BUTTON_WIDTH, BUTTON_HEIGHT);
       day.setBounds((PANEL_WIDTH-day.getPreferredSize().width)/2-55, 50, 100, 25);
       date.setBounds((PANEL_WIDTH-date.getPreferredSize().width)/2+55, 50, 100, 25);
-      //scrollableEvents.setBounds((PANEL_WIDTH-EVENTS_WIDTH)/2, 80, EVENTS_WIDTH, EVENTS_HEIGHT);
-      eventsPanel.setBounds((PANEL_WIDTH - EVENTS_WIDTH) / 2, 80, EVENTS_WIDTH, EVENTS_HEIGHT);
+      scrollableEventsPanel.setBounds((PANEL_WIDTH - EVENTS_WIDTH) / 2, 80, EVENTS_WIDTH, EVENTS_HEIGHT);
 
       SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
       try
@@ -89,9 +90,8 @@ public class DayView extends JPanel implements Observer
       {
          pe.printStackTrace();
       }
-      sdf.applyPattern("HH:mm");
-      //events.setText("");
 
+      sdf.applyPattern("HH:mm a");
       if (calendarModel.eventsScheduled(selectedDate))
       {
          eventsList = calendarModel.getDayEvents(selectedDate);
@@ -109,16 +109,18 @@ public class DayView extends JPanel implements Observer
 
             if (colorSwap)
             {
-               eventArea.setBackground(Color.CYAN);
+               eventArea.setBackground(evenEvents);
             }
             else {
-               eventArea.setBackground(Color.LIGHT_GRAY);
+               eventArea.setBackground(oddEvents);
             }
             colorSwap = !colorSwap;
 
             eventArea.setMaximumSize(new Dimension(EVENTS_WIDTH, eventArea.getPreferredSize().height+10));
             eventArea.setMargin(new Insets(5, 5, 5, 5));
             eventArea.setLineWrap(true);
+            eventArea.setFocusable(false);
+            eventArea.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             eventsPanel.add(eventArea);
          }
       }
@@ -127,8 +129,10 @@ public class DayView extends JPanel implements Observer
          JTextArea eventArea = new JTextArea("No events scheduled for today.");
          eventArea.setMaximumSize(new Dimension(EVENTS_WIDTH, eventArea.getPreferredSize().height+10));
          eventArea.setMargin(new Insets(5, 5, 5, 5));
-         eventArea.setBackground(Color.LIGHT_GRAY);
+         eventArea.setBackground(oddEvents);
          eventArea.setLineWrap(true);
+         eventArea.setFocusable(false);
+         eventArea.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
          eventsPanel.add(eventArea);
       }
 
@@ -137,8 +141,7 @@ public class DayView extends JPanel implements Observer
       add(next);
       add(day);
       add(date);
-      //add(scrollableEvents);
-      add(eventsPanel);
+      add(scrollableEventsPanel);
    }
 
    /**
@@ -180,7 +183,7 @@ public class DayView extends JPanel implements Observer
       }
 
       day.setText(days[calendarModel.getDayOfWeek()-1]);
-      dateText = String.valueOf(calendarModel.getSelectedMonth()+1) + "/" +
+      String dateText = String.valueOf(calendarModel.getSelectedMonth() + 1) + "/" +
          calendarModel.getSelectedDay() + "/" + calendarModel.getSelectedYear();
       date.setText(dateText);
 
@@ -194,7 +197,6 @@ public class DayView extends JPanel implements Observer
          pe.printStackTrace();
       }
       sdf.applyPattern("hh:mm a");
-      //events.setText("");
       eventsPanel.removeAll();
       eventsPanel.validate();
       eventsPanel.repaint();
@@ -215,16 +217,18 @@ public class DayView extends JPanel implements Observer
 
             if (colorSwap)
             {
-               eventArea.setBackground(Color.CYAN);
+               eventArea.setBackground(evenEvents);
             }
             else {
-               eventArea.setBackground(Color.LIGHT_GRAY);
+               eventArea.setBackground(oddEvents);
             }
             colorSwap = !colorSwap;
 
             eventArea.setMaximumSize(new Dimension(EVENTS_WIDTH, eventArea.getPreferredSize().height+10));
             eventArea.setMargin(new Insets(5, 5, 5, 5));
             eventArea.setLineWrap(true);
+            eventArea.setFocusable(false);
+            eventArea.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             eventsPanel.add(eventArea);
          }
       }
@@ -233,8 +237,10 @@ public class DayView extends JPanel implements Observer
          JTextArea eventArea = new JTextArea("No events scheduled for today.");
          eventArea.setMaximumSize(new Dimension(EVENTS_WIDTH, eventArea.getPreferredSize().height+10));
          eventArea.setMargin(new Insets(5, 5, 5, 5));
-         eventArea.setBackground(Color.LIGHT_GRAY);
+         eventArea.setBackground(oddEvents);
          eventArea.setLineWrap(true);
+         eventArea.setFocusable(false);
+         eventArea.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
          eventsPanel.add(eventArea);
 
       }

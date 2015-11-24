@@ -11,27 +11,32 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
- Created by scot on 11/22/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ Overrides the JDialog to create a custom dialog box
+ for entering new events
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class CreateDialog extends JDialog
 {
    private CalendarModel calendarModel;
-   private JPanel dialogPanel;
    private JTextField eventName;
    private JTextField eventDate;
-   private SpinnerDateModel startModel;
    private JSpinner startTime;
-   private SpinnerDateModel endModel;
    private JSpinner endTime;
-   private JLabel eventLabel;
-   private JLabel dateLabel;
-   private JLabel startLabel;
-   private JLabel endLabel;
-   private JButton saveButton;
-   private JButton cancelButton;
 
-   private static final long serialVersionUID = 1L;
-
+   /**
+    Constructor method for CreateDialog
+    @param p parent JFrame
+    @param m a model
+    */
    public CreateDialog(JFrame p, CalendarModel m) {
       super(p, "Create Event", true);
       calendarModel = m;
@@ -43,12 +48,12 @@ public class CreateDialog extends JDialog
       final String START_TEXT = "Start Time:";
       final String END_TEXT = "End Time:";
       // Event
-      eventLabel = new JLabel(EVENT_TEXT);
+      JLabel eventLabel = new JLabel(EVENT_TEXT);
       eventName = new JTextField(EVENT_PLACEHOLDER);
       eventName.requestFocusInWindow();
       eventName.selectAll();
       // Date
-      dateLabel = new JLabel(DATE_TEXT);
+      JLabel dateLabel = new JLabel(DATE_TEXT);
       String selectedDate = String.valueOf((calendarModel.getSelectedMonth()+1)+"/"+
          calendarModel.getSelectedDay()+"/"+ calendarModel.getSelectedYear());
       eventDate = new JTextField(selectedDate);
@@ -56,23 +61,23 @@ public class CreateDialog extends JDialog
       eventDate.setHorizontalAlignment((int)JTextField.CENTER_ALIGNMENT);
 
       // Start
-      startLabel = new JLabel(START_TEXT);
-      startModel = new SpinnerDateModel();
+      JLabel startLabel = new JLabel(START_TEXT);
+      SpinnerDateModel startModel = new SpinnerDateModel();
       startTime = new JSpinner(startModel);
       startTime.setEditor(new JSpinner.DateEditor(startTime, "hh:mm a"));
       ((DefaultFormatter)((JSpinner.DefaultEditor)startTime.getEditor()).getTextField().getFormatter()).setAllowsInvalid(false);
       ((DefaultFormatter)((JSpinner.DefaultEditor)startTime.getEditor()).getTextField().getFormatter()).setOverwriteMode(true);
 
       // End
-      endLabel = new JLabel(END_TEXT);
-      endModel = new SpinnerDateModel();
+      JLabel endLabel = new JLabel(END_TEXT);
+      SpinnerDateModel endModel = new SpinnerDateModel();
       endTime = new JSpinner(endModel);
       endTime.setEditor(new JSpinner.DateEditor(endTime, "hh:mm a"));
       ((DefaultFormatter)((JSpinner.DefaultEditor)endTime.getEditor()).getTextField().getFormatter()).setAllowsInvalid(false);
       ((DefaultFormatter)((JSpinner.DefaultEditor)endTime.getEditor()).getTextField().getFormatter()).setOverwriteMode(true);
 
       // Panel
-      dialogPanel = new JPanel();
+      JPanel dialogPanel = new JPanel();
       GroupLayout layout = new GroupLayout(dialogPanel);
       dialogPanel.setLayout(layout);
       layout.setAutoCreateGaps(true);
@@ -101,10 +106,10 @@ public class CreateDialog extends JDialog
       // BUTTON PANEL //
       final String SAVE_BUTTON = "Save";
       final String CANCEL_BUTTON = "Cancel";
-      saveButton = new JButton(SAVE_BUTTON);
+      JButton saveButton = new JButton(SAVE_BUTTON);
       saveButton.setFocusPainted(false);
       saveButton.addActionListener(new SaveButtonListener());
-      cancelButton = new JButton(CANCEL_BUTTON);
+      JButton cancelButton = new JButton(CANCEL_BUTTON);
       cancelButton.setFocusPainted(false);
       cancelButton.addActionListener(new CancelButtonListener());
       JPanel buttonPanel = new JPanel();
@@ -120,11 +125,11 @@ public class CreateDialog extends JDialog
    }
 
    /**
-    Combines the date and time from two separte
+    Combines the date and time from two separate
     date objects.
     @param date the date
     @param time the time
-    @return
+    @return a combined Date object
     */
    public Date dateTime(Date date, Date time) {
       return new Date(

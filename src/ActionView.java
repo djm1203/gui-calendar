@@ -3,7 +3,17 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
- Created by scot on 11/21/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ View class for performing basic calendar interactions
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class ActionView extends JPanel
 {
@@ -12,6 +22,10 @@ public class ActionView extends JPanel
    JButton delete;
    JButton exit;
 
+   /**
+    Constructor method for ActionView
+    @param c a model
+    */
    public ActionView(CalendarModel c)
    {
       calendarModel = c;
@@ -54,6 +68,10 @@ public class ActionView extends JPanel
       create.addActionListener(listenForButton);
    }
 
+   /**
+    Event listener to delete events for the selected date
+    @param listenForButton a button listener
+    */
    public void deleteButtonListener(ActionListener listenForButton)
    {
       delete.addActionListener(listenForButton);

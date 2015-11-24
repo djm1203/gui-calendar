@@ -10,13 +10,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- Created by scot on 11/21/15.
+
+ COPYRIGHT (C) 2015 Scot Matson. All Rights Reserved.
+
+ Class to connect the view to the model and handle events
+
+ Solves CS151 homework assignment #4
+
+ @author Scot Matson
+
+ @version 1.01 2015/11/23
+
  */
 public class ActionController
 {
    CalendarModel model;
    ActionView view;
 
+   /**
+    Constructor method for ActionController
+    @param cm the model
+    @param av the view
+    */
    public ActionController(CalendarModel cm, ActionView av)
    {
       model = cm;
@@ -60,8 +75,8 @@ public class ActionController
                Map.Entry<Date, List<Event>> pair = it.next();
                for (Event ev : pair.getValue())
                {
-                  sb.append(ev.getStart().getTimeInMillis() + "\n");
-                  sb.append(ev.getEnd().getTimeInMillis() + "\n");
+                  sb.append(ev.getStart().getTimeInMillis()).append("\n");
+                  sb.append(ev.getEnd().getTimeInMillis()).append("\n");
                   sb.append(ev.getTitle());
                   if (pair.getValue().indexOf(ev) < pair.getValue().size() - 1 || it.hasNext())
                   {
@@ -79,7 +94,10 @@ public class ActionController
          {
             try
             {
-               fw.close();
+               if (fw != null)
+               {
+                  fw.close();
+               }
             } catch (IOException ioe)
             {
                ioe.printStackTrace();
